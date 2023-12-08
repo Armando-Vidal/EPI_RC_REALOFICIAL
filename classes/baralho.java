@@ -8,57 +8,52 @@ public class baralho {
 
     public baralho(){   
         this.brlh = new Stack();
-
-        for(int i = 0; i < 10; i++){
-            carta a = new carta("azul", i, new habilidade("none"));
-            this.brlh.add(a);
-        }
-        carta blockAzul = new carta("azul", 11, new habilidade("block"));
-        this.brlh.add(blockAzul);
-        
-        carta maisDoisAzul = new carta("azul", 11, new habilidade("compra"));
-        this.brlh.add(maisDoisAzul);
-
-        for(int j = 0; j < 10; j++){
-            carta a = new carta("verde", j, new habilidade("none"));
-            this.brlh.add(a);
-        }
-        carta blockVerde = new carta("verde", 11, new habilidade("block"));
-        this.brlh.add(blockVerde);
-
-        carta maisDoisVerde = new carta("verde", 11, new habilidade("compra"));
-        this.brlh.add(maisDoisVerde);
-
-        for(int k = 0; k < 10; k++){
-            carta a = new carta("vermelho", k, new habilidade("none"));
-            this.brlh.add(a);
-        }
-        carta blockVermelho = new carta("vermelho", 11, new habilidade("block"));
-        this.brlh.add(blockVermelho);
-
-        carta maisDoisVermelho = new carta("vermelho", 11, new habilidade("compra"));
-        this.brlh.add(maisDoisVermelho);
-
-        for(int l = 0; l < 10; l++){
-            carta a = new carta("amarelo", l, new habilidade("none"));
-            this.brlh.add(a);
-        }
-        carta blockAmarelo = new carta("amarelo", 11, new habilidade("block"));
-        this.brlh.add(blockAmarelo);
-
-        carta maisDoisAmarelo = new carta("amarelo", 11, new habilidade("compra"));
-        this.brlh.add(maisDoisAmarelo);
-
-        Collections.shuffle(this.brlh);
     }
 
-    public static void main (String args[]){
-        baralho teste = new baralho();
-        int i = 0;
-        while(i<49){
-            System.out.println(teste.brlh.get(i).getCor() + " / " + teste.brlh.get(i).getHabilidade());
-            i++;
+    public Stack<carta> geraBaralho(){
+        int x,y;
+        x = y = 0;
+        String[] cores = {"azul", "vermelho", "amarelo", "verde"};
+        String[] habilidades = {"bloqueio", "+2"};
+
+        while(x < 4){
+            carta cardnum = new carta();
+            cardnum.setNum(y);
+            cardnum.setCor(cores[x]);
+            cardnum.setHab("nenhum");
+            this.brlh.add(cardnum);
+            if(y == 9){
+                carta cardhabblock = new carta();
+                cardhabblock.setCor(cores[x]);
+                cardhabblock.setHab(habilidades[0]);
+                cardhabblock.setNum(-1);
+                this.brlh.add(cardhabblock);
+                
+                carta cardhabmaisdois = new carta();
+                cardhabmaisdois.setCor(cores[x]);
+                cardhabmaisdois.setHab(habilidades[1]);
+                cardhabmaisdois.setNum(-1);
+                this.brlh.add(cardhabmaisdois);
+
+                y = -1;
+                x++;
+            }
+            y++;
         }
+
+        Collections.shuffle(brlh);
+
+        return this.brlh;
+    }
+
+    public Stack<String> getBaralho(){
+        Stack<String> baralho = new Stack<>();
         
+        for(int i=0; i<this.brlh.size(); i++){
+            if(brlh.get(i).getHab().equals("nenhum")) baralho.add(brlh.get(i).getCor() + " / " + brlh.get(i).getNum());
+            else if(brlh.get(i).getNum() == -1) baralho.add(brlh.get(i).getCor() + " / " + brlh.get(i).getHab());
+        }
+
+        return baralho;
     }
 }
