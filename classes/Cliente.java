@@ -17,13 +17,17 @@ public class Cliente
             Scanner scanner = new Scanner(System.in);
             System.out.println("Insira o nome do jogador: ");
             String nomeJogador = scanner.nextLine();
-            saidaObj.writeObject(nomeJogador); // enviar o nome do jogador para o servidor
             
-            ClienteThread clienteThread = new ClienteThread(nomeJogador);//abrimos a thread de cada jogador
+            saidaObj.writeObject(nomeJogador); // enviar o nome do jogador para o servidor
+            saidaObj.flush();
+            
+            System.out.println("Jogador " + nomeJogador + "conectado!");
+
+            ClienteThread clienteThread = new ClienteThread(nomeJogador, socket);//abrimos a thread de cada jogador
             Thread thread = new Thread(clienteThread);
             thread.start();
 
-            //precisa implementar atualizações do cliente para o servidor ainda
+            //agora o codigo é realizado em ClienteThread
 
         }catch (IOException e)
         {

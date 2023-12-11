@@ -2,15 +2,19 @@ package classes;
 
 import java.util.Scanner;
 import java.util.Stack;
+import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.InputMismatchException;
 
 //Classe que representa a mesa em que a partida está sendo jogada, controlando ações, baralhos e jogadores
-public class mesa {
+public class mesa implements Serializable{
     //Os atributos são um baralho de onde ccartas serão compradas, um Stack de cartas que será onde as cartas serão jogadas
     //E o jogador que está jogando esse turno
     private baralho baralhoCompra;
     private Stack<carta> baralhoJogado;
     private jogador vez;
+    private jogador jogador1;
+    private jogador jogador2;
 
     //O constructo gera um baralho atribuído a mesa e inicia a Stack de cartas jogadas
     public mesa(baralho baralho){
@@ -21,8 +25,8 @@ public class mesa {
 
     //Função responsável por realizar o jogo (com 2 players)
     public void iniciaJogo(jogador player1, jogador player2) throws WrongCardException{
-        jogador jogador1 = player1;
-        jogador jogador2 = player2;
+        jogador1 = player1;
+        jogador2 = player2;
         
         //Jogadores compram 7 cartas e essas são exibidas (tirar exibição depois)
         for(int i=0; i<7; i++){
@@ -150,6 +154,25 @@ public class mesa {
         System.out.println(vez.nome + " é o vencedor");
     }
 
+
+    public synchronized void processarAcao(String acao) throws WrongCardException
+    {
+        if (acao.equals("Joga carta"))
+        {
+            if (!acao.equals("-1")) 
+            {
+                //tira a carta da mao do jogador, coloca ela no topo da mesa, confirma se posui habilidade e passa a vez
+            }
+  
+            System.out.println("Carta inválida, selecione uma carta com mesmo símbolo ou mesma cor.");
+        }
+        else if (acao.equals("-1"))
+        {
+            //pega a primeira carta do baralho e adiciona a mao do jogador, pergunta se vai jogar ou manter a carta e continua de acordo com a escolha do cliente
+        }
+    }
+
+
     //Getters
     public carta getCartaNoTopo(){
         return this.baralhoJogado.peek();
@@ -165,5 +188,8 @@ public class mesa {
 
     public String getVez(){
         return this.vez.nome;
+    }
+
+    public void processarAcao(InetAddress inetAddress, String command) {
     }
 }

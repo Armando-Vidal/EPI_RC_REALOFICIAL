@@ -1,7 +1,6 @@
 package classes;
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
 
 public class ClienteThread implements Runnable
 {
@@ -10,9 +9,19 @@ public class ClienteThread implements Runnable
     private ObjectOutputStream saidaObj;
     private ObjectInputStream entradaObj;
     
-    public ClienteThread(String nomeJogador)
+    public ClienteThread(String nomeJogador, Socket socket)
     {
         this.nomeJogador = nomeJogador;
+        this.socket = socket;
+    
+        try
+        {
+            saidaObj = new ObjectOutputStream(socket.getOutputStream());
+            entradaObj = new ObjectInputStream(socket.getInputStream());
+        }catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -20,86 +29,56 @@ public class ClienteThread implements Runnable
     {
         try
         {
-            socket = new Socket("localhost", 12345);
-
-            saidaObj = new ObjectOutputStream(socket.getOutputStream());
-            entradaObj = new ObjectInputStream(socket.getInputStream());
-
-            saidaObj.writeObject(nomeJogador);
-
             while (true)
             {
-                //atualização do server
                 Object attObj = entradaObj.readObject();
 
-                if(attObj instanceof Mesa)
+                if(attObj instanceof mesa)
                 {
                     //atualização universal da mesa
-                    Mesa mesaAtt = (Mesa) attObj;
+                    mesa mesaAtt = (mesa) attObj;
                     System.out.println("O status da mesa é: " + mesaAtt);
                 }
                 else if(attObj instanceof String)
                 {
                     //atualizações com base em jogadas (jogar carta da mao / comprar carta)
                     String jogada = (String) attObj;
-                    System.out.println("A jogada de " + nomeJogador + "foi" + jogada);//talvez fique meio poluido e eu retire isso
+                    System.out.println("A jogada de" + nomeJogador + "foi " + jogada);
+                    //colocar a logica de atualização das mao a partir da jogada(chamar mesa ou implementar aqui)
                 }
-                 
-                /*String controleTurno = (String) entradaObj.readObject();
-                System.out.println(controleTurno);
-
-                if(controleTurno.equals("Vez de: " + nomeJogador))
-                {
-                    System.out.println(nomeJogador + " sua mão é essa: ");
-                    System.out.println(nomeJogador.getMao());
-                    System.out.println("Selecione o Índice [0..." + (nomeJogador.mao.size()-1) + "] da carta que deseja jogar ou digite -1 para comprar: ");
-                }
-                
-                System.out.println("Digite uma mensagem para o servidor (ou 'sair' para encerrar): ");
-                Scanner scanner = new Scanner(System.in);
-                String mensagem = scanner.nextLine();
-                saidaObj.writeObject(mensagem);
-
-                if (mensagem.equalsIgnoreCase("sair")) 
-                {
-                    break;
-                }
-
-                String resposta = (String) entradaObj.readObject();
-                System.out.println("Resposta " + resposta);*/
             }
         } catch(IOException | ClassNotFoundException e)
         {
             e.printStackTrace();
         }finally
         {
-            try
-            //fecha os recursos ao fim do jogo
-            {
-            entradaObj.close();
-            saidaObj.close();
-            socket.close();
-            }catch(IOException e)
-            {
-                e.printStackTrace();
-            }
+            fecharConexao();
         }
     }
-        // Envio de jogadas para o servidor
-    public void enviarJogada(String jogada)
+
+    // Envia açao do jogador
+    public void enviarAcao(String acao)
     {
         try
         {
-            saidaObj.writeObject(jogada);
+            saidaObj.writeObject(acao);
             saidaObj.flush();
         } catch (IOException e)
         {
             e.printStackTrace();
         }
-    }
-    // Enviar o estado da mesa atual
-    private void attMesa(Mesa mesaAtt)
+    }    
+    //Fecha a conexão ao fim do jogo
+    public void fecharConexao()
     {
-        //implementar a atualização da mesa k
+        try
+        {
+            entradaObj.close();
+            saidaObj.close();
+            socket.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

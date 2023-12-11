@@ -6,11 +6,11 @@ import java.net.*;
 public class ServidorThread implements Runnable
 {
     private Socket socket;
-    private Mesa mesa;
+    private mesa mesa;
     private ObjectOutputStream saidaobj;
     private ObjectInputStream entradaobj;
 
-    public ServidorThread(Socket socket, Mesa mesa)
+    public ServidorThread(Socket socket, mesa mesa)
     {
         this.socket = socket;
         this.mesa = mesa;
@@ -43,55 +43,16 @@ public class ServidorThread implements Runnable
                 if(acaoCliente instanceof String)
                 {
                     String command = (String) acaoCliente;
-
-                    if(command.equals("Joga carta")) //adaptar de acordo com o comando de jogar carta
+                    try
                     {
-                        //tira a carta da mao do jogador, coloca ela no topo da mesa, confirma se posui habilidade e passa a vez
-                        attUniversal(); // implementar função para atualizar o estado do jogo apos cada jogada
-                    }
-
-                    else if (command.equals("Compra carta"))
-                    {
-                        //pega a primeira carta do baralho e adiciona a mao do jogador, pergunta se vai jogar ou manter a carta e continua de acordo com a escolha do cliente
-                        attUniversal();   
-                    }
-                }
-
-                /*if(acaoCliente instanceof MensagemJogada)
-                {
-                    MensagemJogada mensagemJogada = (MensagemJogada) acaoCliente;
-                    int indiceCarta = mensagemJogada.getIndiceCarta();
-                }
-
-                else
-                {
-
-                }
-
-                saidaobj.writeObject(mesa.getEstadoJogo());
-                saidaobj.flush();
-
-                Object jogada = entradaobj.readObject(); //le a ação do jogador
-
-                //realiza a jogada para a mesa e atualiza o estado do jogo
-                if (jogada instanceof Carta)
-                {
-                    Carta carta = (Carta) jogada;
-                    try {
-                        mesa.jogadorJogaCarta(carta);
+                        mesa.processarAcao(command);
+                        // Atualiza todos os clientes após cada ação
+                        attUniversal();
                     } catch (WrongCardException e)
                     {
-                        // Envia mensagem de erro para o jogador
-                        saidaobj.writeObject("Erro: " + e.getMessage());
-                        saidaobj.flush();
+                        System.out.println("Carta inválida, selecione uma carta com mesmo símbolo ou mesma cor.");
                     }
                 }
-                else if (jogada instanceof Integer && (Integer) jogada == -1)
-                {
-                    //Jogador comprou uma carta
-                    mesa.jogadorCompraCarta();
-                }*/
-
             }
 
         } catch (IOException | ClassNotFoundException e)
@@ -118,10 +79,10 @@ public class ServidorThread implements Runnable
         {
             for(ServidorThread jogador : Servidor.jogadoresConectados)
             {
-                jogador.saidaobj.writeObject(mesa); //mensagem com o status atual da mesa (carta de cima, mao dos jogadores)
+                jogador.saidaobj.writeObject(mesa.getCartaNoTopo()); //mensagem com o status atual da mesa (carta de cima, mao dos jogadores)
+                jogador.saidaobj.flush();
             }
-
-        } catch (IOException e)
+        }catch (IOException e)
         {
             e.printStackTrace();
         }

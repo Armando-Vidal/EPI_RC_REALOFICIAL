@@ -8,7 +8,7 @@ import java.util.List;
 public class Servidor
 {
     static List<ServidorThread> jogadoresConectados = new ArrayList<>();
-    static Mesa mesa;
+    static mesa mesa;
    
     public static void main(String args[]) throws Exception
     {
@@ -17,7 +17,7 @@ public class Servidor
         try
         {
             serverSocket = new ServerSocket(5000);
-            mesa = new Mesa(new Baralho());
+            mesa = new mesa(new baralho());
 
             while(true)//Faz a conexão dos clientes e inicia a thread
             {

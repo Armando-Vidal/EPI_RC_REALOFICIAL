@@ -1,7 +1,9 @@
 package classes;
 
+import java.io.*;
+
 //Essa classe representa a entidade de cada carta individualmente
-public class carta {
+public class carta implements Serializable{
     //Possui os atributos de cor, hab (que pode ser "nenhum") e número (que pode ser -1 em caso de cartas de habilidade)
     private String cor;
     private String hab;
