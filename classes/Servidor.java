@@ -7,11 +7,9 @@ import java.util.List;
 
 public class Servidor
 {
-    private static List<ServidorThread> jogadoresConectados = new ArrayList<>();
-    private static Mesa mesa;
+    static List<ServidorThread> jogadoresConectados = new ArrayList<>();
+    static Mesa mesa;
    
-    public ObjectOutputStream jogadorAtual = null;
-
     public static void main(String args[]) throws Exception
     {
         ServerSocket serverSocket;
