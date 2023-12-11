@@ -19,9 +19,8 @@ public class Cliente
             String nomeJogador = scanner.nextLine();
             
             saidaObj.writeObject(nomeJogador); // enviar o nome do jogador para o servidor
-            saidaObj.flush();
             
-            System.out.println("Jogador " + nomeJogador + "conectado!");
+            System.out.println("Jogador " + nomeJogador + " conectado!");
 
             ClienteThread clienteThread = new ClienteThread(nomeJogador, socket);//abrimos a thread de cada jogador
             Thread thread = new Thread(clienteThread);

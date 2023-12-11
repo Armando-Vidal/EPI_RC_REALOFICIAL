@@ -1,4 +1,6 @@
-package classes;
+/*package classes;
+import java.io.*;
+import java.net.*;
 import java.util.Scanner;
 
 //Classe main que roda o jogo
@@ -23,4 +25,4 @@ public class main{
         mesa mesa = new mesa(baralho);
         mesa.iniciaJogo(player1, player2);
     }
-}
+}*/

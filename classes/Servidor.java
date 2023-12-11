@@ -17,9 +17,8 @@ public class Servidor
         try
         {
             serverSocket = new ServerSocket(5000);
-            mesa = new mesa(new baralho());
 
-            while(true)//Faz a conexão dos clientes e inicia a thread
+            while(jogadoresConectados.size()<2)//Faz a conexão dos clientes e inicia a thread
             {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Novo jogador conectado.");
@@ -30,10 +29,25 @@ public class Servidor
                 Thread thread = new Thread(jogadorThread);
                 thread.start();
             }
+            mesa = new mesa(new baralho());
+            iniciaJogo();
+
         }catch(IOException e)
         {
             e.printStackTrace();
         }
+    }
+
+    private static void iniciaJogo()
+    {
+
+        jogador player1 = new jogador("Jogador1");
+        jogador player2 = new jogador("Jogador2");
+        mesa.iniciaJogo(player1, player2);
+
+        jogadoresConectados.get(0).setJogador(player1);
+        jogadoresConectados.get(1).setJogador(player2);
+
     }
 
 

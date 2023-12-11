@@ -9,6 +9,7 @@ public class ServidorThread implements Runnable
     private mesa mesa;
     private ObjectOutputStream saidaobj;
     private ObjectInputStream entradaobj;
+    private jogador jogador;
 
     public ServidorThread(Socket socket, mesa mesa)
     {
@@ -32,9 +33,6 @@ public class ServidorThread implements Runnable
         try
         {
             //Informações iniciais do jogador
-
-            saidaobj.writeObject("Olá " + socket.getInetAddress());
-
             while(true)
             {
                 //esperando a jogada do cliente
@@ -73,7 +71,13 @@ public class ServidorThread implements Runnable
         }
     }
 
-    public void attUniversal()
+    public void setJogador(jogador jogador)//setamos o jogador para aplicação dos nomes 
+    {
+        this.jogador = jogador;
+    }
+
+
+    public void attUniversal() // atualização para todos os
     {
         try
         {

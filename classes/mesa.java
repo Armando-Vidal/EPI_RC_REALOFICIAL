@@ -24,7 +24,7 @@ public class mesa implements Serializable{
     }
 
     //Função responsável por realizar o jogo (com 2 players)
-    public void iniciaJogo(jogador player1, jogador player2) throws WrongCardException{
+    public synchronized void iniciaJogo(jogador player1, jogador player2) throws WrongCardException{
         jogador1 = player1;
         jogador2 = player2;
         
@@ -36,10 +36,10 @@ public class mesa implements Serializable{
             jogador2.compraCarta(baralhoCompra);
         }
 
-        System.out.println("Baralho do(a) " + jogador1.nome + ": ");
+        /*System.out.println("Baralho do(a) " + jogador1.nome + ": ");
         System.out.println(jogador1.getMao());
         System.out.println("Baralho do(a) " + jogador2.nome + ": ");
-        System.out.println(jogador2.getMao());
+        System.out.println(jogador2.getMao());*/
 
         //Coloca uma carta (numérica e não de habilidade) nas cartas jogadas para iniciar o jogo e coloca a vez para o jogador 1
         while(baralhoCompra.brlh.get(baralhoCompra.brlh.size() - 1).getNum() == -1){
@@ -53,12 +53,12 @@ public class mesa implements Serializable{
         //While que faz o jogo rodar até um player ficar sem cartas
         while(true){
             //Exibição da carta que está no topo das jogadas e da mão do jogador da vez
-            System.out.println("Carta no topo da mesa: ");
-            if((baralhoJogado.get(baralhoJogado.size() - 1).getHab().equals("bloqueio")) || (baralhoJogado.get(baralhoJogado.size() - 1).getHab().equals("+2")) ){
+            System.out.println("Carta no topo da mesa: " + baralhoJogado.peek());
+            /*if((baralhoJogado.get(baralhoJogado.size() - 1).getHab().equals("bloqueio")) || (baralhoJogado.get(baralhoJogado.size() - 1).getHab().equals("+2")) ){
                 System.out.println(baralhoJogado.get(baralhoJogado.size() - 1).getCor() + " / " + baralhoJogado.get(baralhoJogado.size() - 1).getHab());
             } else if(baralhoJogado.get(baralhoJogado.size() - 1).getNum() > -1){
                 System.out.println(baralhoJogado.get(baralhoJogado.size() - 1).getCor() + " / " + baralhoJogado.get(baralhoJogado.size() - 1).getNum());
-            }
+            }*/
 
             System.out.println("Vez de: " + vez.nome);
 
@@ -73,7 +73,7 @@ public class mesa implements Serializable{
             //O maior try-catch impede o jogador de escolher uma carta que não "combina" com a do topo das jogadas
             try{
                 while(true){
-                    //Esse try-catch menor impede o jogador de escolher um valor de índece que esteja fora do ramge
+                    //Esse try-catch menor impede o jogador de escolher um valor de índice que esteja fora do range
                     //de suas cartas ou uma letra/símbolo não numérico
                     try {
                         //indeMao é a variávelque representa o índice da carta do jogador no array em sua mão
@@ -139,8 +139,8 @@ public class mesa implements Serializable{
             //Verifica se algum dos jogadoores está de mão vazia
             if(vez.mao.size() == 0) break;
 
-            //Aplica as habilidades das cartas especiais (caso seja um bloqueio a vez não será passada e caso seja um +2)
-            //o outro jogador compra duas cartas
+            //Aplica as habilidades das cartas especiais (caso seja um bloqueio a vez não será passada e
+            //caso seja um +2 o outro jogador compra duas cartas)
             if(vez == jogador1 && !(baralhoJogado.get(baralhoJogado.size() - 1).getHab().equals("bloqueio"))) vez = jogador2;
             else if(vez == jogador2 && !(baralhoJogado.get(baralhoJogado.size() - 1).getHab().equals("bloqueio"))) vez = jogador1;
 
@@ -157,12 +157,10 @@ public class mesa implements Serializable{
 
     public synchronized void processarAcao(String acao) throws WrongCardException
     {
-        if (acao.equals("Joga carta"))
+        if (!acao.equals("-1")) 
         {
-            if (!acao.equals("-1")) 
-            {
-                //tira a carta da mao do jogador, coloca ela no topo da mesa, confirma se posui habilidade e passa a vez
-            }
+            //tira a carta da mao do jogador, coloca ela no topo da mesa, confirma se posui habilidade e passa a vez
+            
   
             System.out.println("Carta inválida, selecione uma carta com mesmo símbolo ou mesma cor.");
         }
