@@ -1,37 +1,47 @@
 package classes;
+
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
-//codigo de cliente geral 
+
 public class Cliente
 {
-    public static void main(String args[]) throws Exception
-    {    
+    public static void main(String[] args) {
+        //Especificação do endereço IP e porta do servidor
         try
-        {       
-            Socket socket = new Socket("localhost", 5000); //criação do socket
-        
-            ObjectOutputStream saidaObj = new ObjectOutputStream(socket.getOutputStream());//declaração de saida/entrada de mensagens que ainda não esta sendo aplicada pq o cliente
-            ObjectInputStream entradaObj = new ObjectInputStream(socket.getInputStream());//so serve pra colocar o nome do jogador, e depois nem isso pq ta atribuindo o nome la no server
+        {
+            // Conecta ao servidor
+            Socket socket = new Socket("localhost", 5000);
+
+            // Configura entrada e saída
+            ObjectOutputStream saidaMsg = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream entradaMsg = new ObjectInputStream(socket.getInputStream());
 
             Scanner scanner = new Scanner(System.in);//pegar o nome do jogador
             System.out.println("Insira o nome do jogador: ");
             String nomeJogador = scanner.nextLine();
-            
-            saidaObj.writeObject(nomeJogador); // enviar o nome do jogador para o servidor, isso é feito certo uffa
-            
-            System.out.println("Jogador " + nomeJogador + " conectado!");//printando o nome do cliente pra ter um controle
+            saidaMsg.writeObject(nomeJogador);
+            saidaMsg.flush();
 
-            ClienteThread clienteThread = new ClienteThread(nomeJogador, socket);//criamos a thread de cada jogador
-            Thread thread = new Thread(clienteThread);//comeca a thread, mas ainda n tem a aplicação de rodar sincronizado, krl falta mta coisa
-            thread.start();
 
-            //agora o codigo é realizado em ClienteThread
+            while (true)
+            {
+                // Leitura da jogada
+                System.out.print("Digite sua jogada: ");
+                String jogada = scanner.nextLine();
 
-        }catch (IOException e)
+                // Envia a jogada para o server
+                saidaMsg.writeObject(jogada);
+                saidaMsg.flush();
+
+                // Recebe mensagens
+                Object msg = entradaMsg.readObject();
+                System.out.println("Mensagem do servidor: " + msg);
+            }
+
+        } catch (IOException | ClassNotFoundException e)
         {
             e.printStackTrace();
         }
-
     }
 }

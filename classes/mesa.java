@@ -170,6 +170,20 @@ public class mesa implements Serializable{
         }
     }
 
+    //funções para o jogo rodar de acordo no servidor
+    public Stack<String> getMao()
+    {
+        return vez.getMao();
+    }
+    public jogador getJogadorAtual()
+    {
+        return vez;
+    }
+    public void compraCarta()
+    {
+        vez.compraCarta(baralhoCompra);
+    }
+
 
     //Getters
     public carta getCartaNoTopo(){
