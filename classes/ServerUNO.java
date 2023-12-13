@@ -2,12 +2,9 @@ package classes;
 
 import java.io.*;
 import java.net.*;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class ServerUNO
 {
-    private static Queue<Socket> filaClientes = new LinkedList<>();
     public static void main(String[] args)
     {
         ServerSocket serverSocket = null;
@@ -16,7 +13,7 @@ public class ServerUNO
         try
         {
             //cria o socket do servidor
-            serverSocket = new ServerSocket(12345);
+            serverSocket = new ServerSocket(5000);
             System.out.println("Servidor UNO iniciado...");
 
             Socket jogador1Socket = serverSocket.accept();
@@ -25,6 +22,8 @@ public class ServerUNO
             Socket jogador2Socket = serverSocket.accept();
             System.out.println("Jogador 2 conectado " + jogador2Socket.getInetAddress().getHostName());
                 
+            System.out.println("Temos 2 jogadores, vamos iniciar a partida!");
+            
             // Cria uma instância da mesa e inicia o jogo
             baralho baralho = new baralho();
             mesa mesa = new mesa(baralho);
@@ -58,7 +57,9 @@ class GameThread extends Thread
 {
     private Socket clientSocket;
     private mesa mesa;
-    private String nomeJogador;
+    private jogador jogador1;
+    private jogador jogador2;
+    
     
     private ObjectOutputStream saidaMsg;
     private ObjectInputStream entradaMsg;
@@ -67,12 +68,13 @@ class GameThread extends Thread
     {
         this.clientSocket = clientSocket;
         this.mesa = mesa;
-        this.nomeJogador = nomeJogador;
+
 
         try
         {
             this.saidaMsg = new ObjectOutputStream(clientSocket.getOutputStream());
             this.entradaMsg = new ObjectInputStream(clientSocket.getInputStream());
+            saidaMsg.writeObject(" Jogo criado!");
 
         } catch (IOException e)
         {
@@ -118,24 +120,56 @@ class GameThread extends Thread
                 // Obter o jogador atual
                 jogador vez = mesa.getJogadorAtual();
 
-                mandarMsg("Carta no topo: " + mesa.getCartaNoTopo());
-                mandarMsg("Suas cartas: " + mesa.getMao());
+                if(vez == null)//se nao tem vez, inicia o jogo
+                {
+                    mesa.iniciaJogo(jogador1, jogador2);
+                }
 
-                mandarMsg("Sua vez, escolha uma carta para jogar (índice) ou digite -1 para comprar uma carta:");
-                int escolha = (int) receberMsg();
+                else if (vez.nome.equals("Jogador 1"))//manda msg pro jogador 1
+                {
+                    mandarMsg("Sua vez!");
+                    mandarMsg("Carta no topo: " + mesa.getCartaNoTopo());
+                    mandarMsg("Suas cartas: " + mesa.getMao());
 
-                // Lógica para processar a escolha do jogador
-                if (escolha >= 0 && escolha < mesa.getMao().size())
+                    mandarMsg("Escolha uma carta para jogar (índice) ou digite -1 para comprar uma carta:");
+                    int escolha = (int) receberMsg();
+
+                    // Lógica para processar a escolha do jogador
+                    if (escolha >= 0 && escolha < mesa.getMao().size())
+                    {
+                        mesa.processarAcao(mesa.getMao().get(escolha));
+                        mandarMsg("A carta jogada: " + mesa.getMao().get(escolha));
+                    } else if (escolha == -1)
+                    {
+                        mesa.compraCarta();
+                        mandarMsg("Você comprou uma carta, sua mão agora é: " + mesa.getMao());//adaptar para a lógica de compra de mesa.java
+                    } else
+                    {
+                    mandarMsg("Carta inválida, selecione uma carta com mesmo símbolo ou mesma cor.");
+                    }
+                }
+                else//manda msg pro jogador 2
                 {
-                    mesa.processarAcao(mesa.getMao().get(escolha));
-                    mandarMsg("A carta jogada: " + mesa.getMao().get(escolha));
-                } else if (escolha == -1)
-                {
-                    mesa.compraCarta();
-                    mandarMsg("Você comprou uma carta, sua mão agora é: " + mesa.getMao());//adaptar para a lógica de compra de mesa.java
-                } else
-                {
-                mandarMsg("Carta inválida, selecione uma carta com mesmo símbolo ou mesma cor.");
+                    mandarMsg("Sua vez!");
+                    mandarMsg("Carta no topo: " + mesa.getCartaNoTopo());
+                    mandarMsg("Suas cartas: " + mesa.getMao());
+
+                    mandarMsg("Escolha uma carta para jogar (índice) ou digite -1 para comprar uma carta:");
+                    int escolha = (int) receberMsg();
+
+                    // Lógica para processar a escolha do jogador
+                    if (escolha >= 0 && escolha < mesa.getMao().size())
+                    {
+                        mesa.processarAcao(mesa.getMao().get(escolha));
+                        mandarMsg("A carta jogada: " + mesa.getMao().get(escolha));
+                    } else if (escolha == -1)
+                    {
+                        mesa.compraCarta();
+                        mandarMsg("Você comprou uma carta, sua mão agora é: " + mesa.getMao());//adaptar para a lógica de compra de mesa.java
+                    } else
+                    {
+                    mandarMsg("Carta inválida, selecione uma carta com mesmo símbolo ou mesma cor.");
+                    }
                 }
 
             // Adicione lógica para verificar vitória ou trocar jogador, conforme necessário
