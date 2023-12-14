@@ -16,9 +16,11 @@ public class ServerUNO
             serverSocket = new ServerSocket(5000);
             System.out.println("Servidor UNO iniciado...");
 
+            //aceita o jogador 1
             Socket jogador1Socket = serverSocket.accept();
             System.out.println("Jogador 1 conectado " + jogador1Socket.getInetAddress().getHostName());
 
+            //aceita o jogador 2
             Socket jogador2Socket = serverSocket.accept();
             System.out.println("Jogador 2 conectado " + jogador2Socket.getInetAddress().getHostName());
                 
@@ -32,7 +34,7 @@ public class ServerUNO
             GameThread jogador1Thread = new GameThread(jogador1Socket, mesa, "Jogador 1");
             GameThread jogador2Thread = new GameThread(jogador2Socket, mesa, "Jogador 2");
 
-            //Inicia elas
+            //Inicia as threads
             jogador1Thread.start();
             jogador2Thread.start();
 
@@ -60,7 +62,7 @@ class GameThread extends Thread
     private jogador jogador1;
     private jogador jogador2;
     
-    
+    //cria atributos para troca de mensagem com o cliente
     private ObjectOutputStream saidaMsg;
     private ObjectInputStream entradaMsg;
 
@@ -70,6 +72,7 @@ class GameThread extends Thread
         this.mesa = mesa;
 
 
+        //criamos a partida e printamos uma mensagem indicando isso
         try
         {
             this.saidaMsg = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -82,18 +85,20 @@ class GameThread extends Thread
         }
     }
 
+    //Função para o envio de mensagens para o cliente
     private void mandarMsg(Object msg)
     {
         try
         {
             saidaMsg.writeObject(msg);
-            saidaMsg.flush();
+            saidaMsg.flush();//garante o envio da mensagem
         } catch (IOException e)
         {
             e.printStackTrace();
         }
     }
 
+    //Função para o recebimento de mensagens do cliente
     private Object receberMsg()
     {
         try
@@ -120,7 +125,7 @@ class GameThread extends Thread
                 // Obter o jogador atual
                 jogador vez = mesa.getJogadorAtual();
 
-                if(vez == null)//se nao tem vez, inicia o jogo
+                if(vez == null)//se nao tem vez, inicia o jogo e atribui a vez para o jogador 1, de acordo com a lógica da mesa
                 {
                     mesa.iniciaJogo(jogador1, jogador2);
                 }
@@ -142,7 +147,7 @@ class GameThread extends Thread
                     } else if (escolha == -1)
                     {
                         mesa.compraCarta();
-                        mandarMsg("Você comprou uma carta, sua mão agora é: " + mesa.getMao());//adaptar para a lógica de compra de mesa.java
+                        mandarMsg("Você comprou uma carta, sua mão agora é: " + mesa.getMao());
                     } else
                     {
                     mandarMsg("Carta inválida, selecione uma carta com mesmo símbolo ou mesma cor.");
@@ -165,14 +170,12 @@ class GameThread extends Thread
                     } else if (escolha == -1)
                     {
                         mesa.compraCarta();
-                        mandarMsg("Você comprou uma carta, sua mão agora é: " + mesa.getMao());//adaptar para a lógica de compra de mesa.java
+                        mandarMsg("Você comprou uma carta, sua mão agora é: " + mesa.getMao());
                     } else
                     {
                     mandarMsg("Carta inválida, selecione uma carta com mesmo símbolo ou mesma cor.");
                     }
                 }
-
-            // Adicione lógica para verificar vitória ou trocar jogador, conforme necessário
             }
         } finally
         {

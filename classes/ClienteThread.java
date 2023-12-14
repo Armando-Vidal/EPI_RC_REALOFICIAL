@@ -25,6 +25,7 @@ public class ClienteThread extends Thread
         {
             while (true)
             {
+                //recebe mensagens do servidor(indicação de vez, atualizações da mesa)
                 Object msg = entradaMsg.readObject();
                 System.out.println("Mensagem do servidor para " + nomeJogador + ": " + msg);
 

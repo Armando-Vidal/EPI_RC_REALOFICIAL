@@ -18,14 +18,14 @@ public class Cliente
             // Conecta ao servidor
             Socket socket = new Socket("localhost", 5000);
 
-            // Configura entrada e saída
+            // Configura entrada e saída de mensagens
             ObjectOutputStream saidaMsg = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream entradaMsg = new ObjectInputStream(socket.getInputStream());
 
-            saidaMsg.writeObject(nomeJogador);
-            saidaMsg.flush();
+            saidaMsg.writeObject(nomeJogador);//envia o nome do jogador para o servidor
+            saidaMsg.flush();//garante o envio da mensagem
             
-            ClienteThread jogador = new ClienteThread(nomeJogador, saidaMsg, entradaMsg);
+            ClienteThread jogador = new ClienteThread(nomeJogador, saidaMsg, entradaMsg);//inicia a thread do cliente
             jogador.start();
             
         } catch (IOException e)
